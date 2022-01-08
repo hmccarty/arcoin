@@ -1,49 +1,34 @@
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.4.24;
 
-contract Coin {
-    string public constant name = "ARC Coin";
-    string public constant symbol = "ARC";
-    uint8 public constant decimals = 2;  
+/**
+ * @title ERC20 interface
+ * @dev see https://github.com/ethereum/EIPs/issues/20
+ */
+interface IERC20 {
+  function totalSupply() external view returns (uint256);
 
-    // The keyword "public" makes variables
-    // accessible from other contracts
-    address public minter;
-    mapping (address => uint) public balances;
+  function balanceOf(address who) external view returns (uint256);
 
-    // Events allow clients to react to specific
-    // contract changes you declare
-    event Sent(address from, address to, uint amount);
+  function allowance(address owner, address spender)
+    external view returns (uint256);
 
-    // Constructor code is only run when the contract
-    // is created
-    constructor() {
-        minter = msg.sender;
-    }
+  function transfer(address to, uint256 value) external returns (bool);
 
-    // Sends an amount of newly created coins to an address
-    // Can only be called by the contract creator
-    function mint(address receiver, uint amount) public {
-        require(msg.sender == minter);
-        balances[receiver] += amount;
-    }
+  function approve(address spender, uint256 value)
+    external returns (bool);
 
-    // Errors allow you to provide information about
-    // why an operation failed. They are returned
-    // to the caller of the function.
-    error InsufficientBalance(uint requested, uint available);
+  function transferFrom(address from, address to, uint256 value)
+    external returns (bool);
 
-    // Sends an amount of existing coins
-    // from any caller to an address
-    function send(address receiver, uint amount) public {
-        if (amount > balances[msg.sender])
-            revert InsufficientBalance({
-                requested: amount,
-                available: balances[msg.sender]
-            });
+  event Transfer(
+    address indexed from,
+    address indexed to,
+    uint256 value
+  );
 
-        balances[msg.sender] -= amount;
-        balances[receiver] += amount;
-        emit Sent(msg.sender, receiver, amount);
-    }
+  event Approval(
+    address indexed owner,
+    address indexed spender,
+    uint256 value
+  );
 }
